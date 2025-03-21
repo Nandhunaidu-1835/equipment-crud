@@ -5,7 +5,7 @@ import {
   updateEquipment,
   deleteEquipment,
 } from '../services/equipmentService';
-import './EquipmentPage.css'; // CSS stays the same!
+import './EquipmentPage.css'; // CSS stays the same
 
 const EquipmentPage = () => {
   const [equipmentList, setEquipmentList] = useState([]);
