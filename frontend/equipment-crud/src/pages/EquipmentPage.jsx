@@ -1,21 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import {
-  getEquipment,
-  createEquipment,
-  updateEquipment,
-  deleteEquipment,
-} from '../services/equipmentService';
-import './EquipmentPage.css'; // CSS stays the same
+import { getEquipment,createEquipment,updateEquipment,deleteEquipment} from '../services/equipmentService';
+import './EquipmentPage.css';
 
 const EquipmentPage = () => {
   const [equipmentList, setEquipmentList] = useState([]);
-
   const [formData, setFormData] = useState({
     code: '',
     description: '',
     status: false, // Active/Inactive
     priority: 1,
-
     equipment_type_group_id: '',
     equipment_type_id: '',
     site: '',
@@ -40,11 +33,12 @@ const EquipmentPage = () => {
     updated_datetime: '',
     defectflag: false,
   });
-
   const [errors, setErrors] = useState({});
   const [editId, setEditId] = useState(null);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [expandedRows, setExpandedRows] = useState([]);
-
+  
   useEffect(() => {
     fetchEquipment();
   }, []);
@@ -57,10 +51,8 @@ const EquipmentPage = () => {
       console.error('Error fetching equipment:', error);
     }
   };
-
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-
     let newValue;
     if (type === 'checkbox') {
       newValue = checked;
@@ -69,73 +61,81 @@ const EquipmentPage = () => {
     } else {
       newValue = value;
     }
-
-    setFormData({
-      ...formData,
+    setFormData((prevData) => ({
+      ...prevData,
       [name]: newValue,
-    });
+    }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "", // Remove error for this field
+    }));
   };
-
   const validateForm = (formData, setErrors) => {
     let errors = {};
-
+    console.log("Form Data:", formData); // Debugging line
     Object.keys(formData).forEach((key) => {
-        if (!formData[key]) {
-            errors[key] = `${key} is required`;
-        }
+      if (formData[key] === "" || formData[key] === null || formData[key] === undefined) {
+        errors[key] = `${key.replace(/_/g, " ")} is required`;
+      }
     });
-
+    if (formData.warranty_start_date && formData.warranty_end_date) {
+      const startDate = new Date(formData.warranty_start_date);
+      const endDate = new Date(formData.warranty_end_date);
+      if (startDate >= endDate) {
+          errors.warranty_start_date = "Warranty start date must before warranty end date";
+          errors.warranty_end_date = "Warranty end date must be after warranty start date";
+      }
+    }
     setErrors(errors);
     console.log(errors);
     return Object.keys(errors).length === 0; // Returns true if no errors 
   }; 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm(formData, setErrors)) {
-      return; // Stop submission if there are errors
-    }
-
-  // Proceed with form submission
-   console.log("Form submitted successfully", formData);
-
+    const isValid = validateForm(formData, setErrors);
+    if (!isValid) {
+      console.log("Validation failed", errors);
+      setErrorMessage("Validation failed. Please check the form.");
+      return;
+    }  
+    console.log("Form submitted successfully", formData);
     try {
       const updatedFormData = {
         ...formData,
         updated_datetime: new Date().toISOString(),
       };
-
       if (editId) {
         await updateEquipment(editId, updatedFormData);
+        setSuccessMessage("Equipment updated successfully!");
       } else {
         await createEquipment(updatedFormData);
+        setSuccessMessage("Equipment created successfully!");
       }
-
       resetForm();
       fetchEquipment();
     } catch (error) {
       console.error('Error saving equipment:', error);
+      setErrorMessage("Failed to save equipment. Please try again.");
     }
   };
-
   const handleEdit = (equipment) => {
     setFormData({
       ...equipment,
     });
     setEditId(equipment.id);
   };
-
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this equipment?')) return;
 
     try {
       await deleteEquipment(id);
+      setSuccessMessage("Equipment deleted successfully!");
       fetchEquipment();
     } catch (error) {
       console.error('Error deleting equipment:', error);
+      setErrorMessage("Failed to delete equipment. Please try again.");
     }
   };
-
   const resetForm = () => {
     setFormData({
       code: '',
@@ -180,7 +180,6 @@ const EquipmentPage = () => {
   return (
     <div className="equipment-container">
       <h2 className="page-title">Equipment Management</h2>
-
       <form onSubmit={handleSubmit} className="equipment-form">
         <div className="form-group">
           <label>Code:<span className="required-star">*</span></label>
@@ -188,9 +187,7 @@ const EquipmentPage = () => {
             type="text"
             name="code"
             value={formData.code}
-            onChange={handleInputChange}
-            required
-          />
+            onChange={handleInputChange}/>
           {errors.code && <span className="error">{errors.code}</span>}
         </div>
 
@@ -201,8 +198,7 @@ const EquipmentPage = () => {
             name="equipment_type_group_id"
             className = "no-arrows"
             value={formData.equipment_type_group_id}
-            onChange={handleInputChange}
-          />
+            onChange={handleInputChange}/>
           {errors.equipment_type_group_id && <span className="error">{errors.equipment_type_group_id}</span>}          
         </div>
 
@@ -213,8 +209,7 @@ const EquipmentPage = () => {
             name="equipment_type_id"
             className = "no-arrows"
             value={formData.equipment_type_id}
-            onChange={handleInputChange}
-          />
+            onChange={handleInputChange}/>
           {errors.equipment_type_id && <span className="error">{errors.equipment_type_id}</span>}          
         </div>
 
@@ -225,8 +220,7 @@ const EquipmentPage = () => {
             name="site"
             className = "no-arrows"
             value={formData.site}
-            onChange={handleInputChange}
-          />
+            onChange={handleInputChange}/>
           {errors.site && <span className="error">{errors.site}</span>}          
         </div>
 
@@ -236,9 +230,7 @@ const EquipmentPage = () => {
           <select
             name="priority"
             value={formData.priority}
-            onChange={handleInputChange}
-            required
-          >
+            onChange={handleInputChange}>
             <option value={1}>1 - High Priority</option>
             <option value={2}>2 - Medium Priority</option>
             <option value={3}>3 - Low Priority</option>
@@ -252,8 +244,7 @@ const EquipmentPage = () => {
             type="text"
             name="serial_number"
             value={formData.serial_number}
-            onChange={handleInputChange}
-          />
+            onChange={handleInputChange}/>
           {errors.serial_number && <span className="error">{errors.serial_number}</span>}          
         </div>
 
@@ -263,8 +254,7 @@ const EquipmentPage = () => {
             type="text"
             name="model_number"
             value={formData.model_number}
-            onChange={handleInputChange}
-          />
+            onChange={handleInputChange}/>
           {errors.model_number && <span className="error">{errors.model_number}</span>}          
         </div>
 
@@ -274,8 +264,7 @@ const EquipmentPage = () => {
             type="text"
             name="qrcode"
             value={formData.qrcode}
-            onChange={handleInputChange}
-          />
+            onChange={handleInputChange}/>
           {errors.qrcode && <span className="error">{errors.qrcode}</span>}          
         </div>
 
@@ -285,8 +274,7 @@ const EquipmentPage = () => {
             type="text"
             name="asset_number"
             value={formData.asset_number}
-            onChange={handleInputChange}
-          />
+            onChange={handleInputChange}/>
           {errors.asset_number && <span className="error">{errors.asset_number}</span>}                  
         </div>
 
@@ -296,8 +284,7 @@ const EquipmentPage = () => {
             type="text"
             name="location_1"
             value={formData.location_1}
-            onChange={handleInputChange}
-          />
+            onChange={handleInputChange}/>
           {errors.location_1 && <span className="error">{errors.location_1}</span>}                  
         </div>
 
@@ -307,8 +294,7 @@ const EquipmentPage = () => {
             type="text"
             name="location_2"
             value={formData.location_2}
-            onChange={handleInputChange}
-          />
+            onChange={handleInputChange}/>
           {errors.location_2 && <span className="error">{errors.location_2}</span>}                  
         </div>
 
@@ -318,8 +304,7 @@ const EquipmentPage = () => {
             type="text"
             name="location_3"
             value={formData.location_3}
-            onChange={handleInputChange}
-          />
+            onChange={handleInputChange}/>
           {errors.location_3 && <span className="error">{errors.location_3}</span>}                  
         </div>
 
@@ -329,8 +314,7 @@ const EquipmentPage = () => {
             type="text"
             name="location_4"
             value={formData.location_4}
-            onChange={handleInputChange}
-          />
+            onChange={handleInputChange}/>
           {errors.location_4 && <span className="error">{errors.location_4}</span>}                  
         </div>
 
@@ -341,8 +325,7 @@ const EquipmentPage = () => {
             name="response_time"
             className = "no-arrows"
             value={formData.response_time}
-            onChange={handleInputChange}
-          />
+            onChange={handleInputChange}/>
           {errors.response_time && <span className="error">{errors.response_time}</span>}                  
         </div>
 
@@ -353,8 +336,7 @@ const EquipmentPage = () => {
             name="work_completion_time"
             className = "no-arrows"
             value={formData.work_completion_time}
-            onChange={handleInputChange}
-          />
+            onChange={handleInputChange}/>
           {errors.work_completion_time && <span className="error">{errors.work_completion_time}</span>}                  
         </div>
 
@@ -364,8 +346,7 @@ const EquipmentPage = () => {
             type="text"
             name="equipment_oos"
             value={formData.equipment_oos}
-            onChange={handleInputChange}
-          />
+            onChange={handleInputChange}/>
           {errors.equipment_oos && <span className="error">{errors.equipment_oos}</span>}                  
         </div>
 
@@ -376,8 +357,7 @@ const EquipmentPage = () => {
             name="sitestartup_account_id"
             className = "no-arrows"
             value={formData.sitestartup_account_id}
-            onChange={handleInputChange}
-          />
+            onChange={handleInputChange}/>
           {errors.sitestartup_account_id && <span className="error">{errors.sitestartup_account_id}</span>}                  
         </div>
 
@@ -388,8 +368,7 @@ const EquipmentPage = () => {
             name="updated_by"
             className = "no-arrows"
             value={formData.updated_by}
-            onChange={handleInputChange}
-          />
+            onChange={handleInputChange}/>
           {errors.updated_by && <span className="error">{errors.updated_by}</span>}                  
         </div>
 
@@ -399,8 +378,7 @@ const EquipmentPage = () => {
             type="datetime-local"
             name="installation_date"
             value={formData.installation_date}
-            onChange={handleInputChange}
-          />
+            onChange={handleInputChange}/>
           {errors.installation_date && <span className="error">{errors.installation_date}</span>}                  
         </div>
 
@@ -410,8 +388,7 @@ const EquipmentPage = () => {
             type="datetime-local"
             name="warranty_start_date"
             value={formData.warranty_start_date}
-            onChange={handleInputChange}
-          />
+            onChange={handleInputChange}/>
           {errors.warranty_start_date && <span className="error">{errors.warranty_start_date}</span>}                  
         </div>
 
@@ -421,8 +398,7 @@ const EquipmentPage = () => {
             type="datetime-local"
             name="warranty_end_date"
             value={formData.warranty_end_date}
-            onChange={handleInputChange}
-          />
+            onChange={handleInputChange}/>
           {errors.warranty_end_date && <span className="error">{errors.warranty_end_date}</span>}                  
         </div>
 
@@ -431,9 +407,7 @@ const EquipmentPage = () => {
           <textarea
             name="description"
             value={formData.description}
-            onChange={handleInputChange}
-            required
-          />
+            onChange={handleInputChange}/>
           {errors.description && <span className="error">{errors.description}</span>}                  
         </div>
 
@@ -444,8 +418,7 @@ const EquipmentPage = () => {
             type="datetime-local"
             name="updated_datetime"
             value={formData.updated_datetime}
-            onChange={handleInputChange}
-          />
+            onChange={handleInputChange}/>
           {errors.updated_datetime && <span className="error">{errors.updated_datetime}</span>}                  
         </div>
 
@@ -459,8 +432,7 @@ const EquipmentPage = () => {
                 name="defectflag"
                 value={true}
                 checked={formData.defectflag === true}
-                onChange={handleInputChange}
-              />
+                onChange={handleInputChange}/>
               Yes
             </label>
             <label>
@@ -469,8 +441,7 @@ const EquipmentPage = () => {
                 name="defectflag"
                 value={false}
                 checked={formData.defectflag === false}
-                onChange={handleInputChange}
-              />
+                onChange={handleInputChange}/>
               No
             </label>
           </div>
@@ -487,8 +458,7 @@ const EquipmentPage = () => {
                 name="status"
                 value={true}
                 checked={formData.status === true}
-                onChange={handleInputChange}
-              />
+                onChange={handleInputChange}/>
               Active
             </label>
             <label>
@@ -497,8 +467,7 @@ const EquipmentPage = () => {
                 name="status"
                 value={false}
                 checked={formData.status === false}
-                onChange={handleInputChange}
-              />
+                onChange={handleInputChange}/>
               Inactive
             </label>
           </div>
@@ -514,8 +483,7 @@ const EquipmentPage = () => {
                 name="out_of_service_flag"
                 value={true}
                 checked={formData.out_of_service_flag === true}
-                onChange={handleInputChange}
-              />
+                onChange={handleInputChange}/>
               Yes
             </label>
             <label>
@@ -524,8 +492,7 @@ const EquipmentPage = () => {
                 name="out_of_service_flag"
                 value={false}
                 checked={formData.out_of_service_flag === false}
-                onChange={handleInputChange}
-              />
+                onChange={handleInputChange}/>
               No
             </label>
           </div>
@@ -542,8 +509,7 @@ const EquipmentPage = () => {
                 name="rotatable"
                 value={true}
                 checked={formData.rotatable === true}
-                onChange={handleInputChange}
-              />
+                onChange={handleInputChange}/>
               Yes
             </label>
             <label>
@@ -552,91 +518,87 @@ const EquipmentPage = () => {
                 name="rotatable"
                 value={false}
                 checked={formData.rotatable === false}
-                onChange={handleInputChange}
-              />
+                onChange={handleInputChange}/>
               No
             </label>
           </div>
           {errors.rotatable && <span className="error">{errors.rotatable}</span>}                  
         </div>
 
-        
         <div class="submit-btn-container">
         <button type="submit" className="submit-btn">
           {editId ? 'Update' : 'Create'} Equipment
         </button>
         </div>
+        {successMessage && <p style={{ color: "green", marginTop: "10px",marginLeft: "490px", textAlign:"center"}}>{successMessage}</p>}
       </form>
       <br />
 
       {/* Table Rendering */}
       <div className="table-container">
-
-      <table className="equipment-table">
-  <thead>
-    <tr>
-      <th>S.No <span className="sort-icons">⬇️</span></th>
-      <th>Code <span className="sort-icons">⬇️</span></th>
-      <th>Description <span className="sort-icons">⬇️</span></th>
-      <th>Equipment Type Group ID <span className="sort-icons">⬇️</span></th>
-      <th>Equipment Type ID <span className="sort-icons">⬇️</span></th>
-      <th>Site <span className="sort-icons">⬇️</span></th>
-      <th>Serial Number <span className="sort-icons">⬇️</span></th>
-      <th>Model Number <span className="sort-icons">⬇️</span></th>
-      <th>QR Code <span className="sort-icons">⬇️</span></th>
-      <th>Asset Number <span className="sort-icons">⬇️</span></th>
-      <th>Status <span className="sort-icons">⬇️</span></th>
-      <th>Installation Date <span className="sort-icons">⬇️</span></th>
-      <th>Warranty Start Date <span className="sort-icons">⬇️</span></th>
-      <th>Warranty End Date <span className="sort-icons">⬇️</span></th>
-      <th>Out of Service <span className="sort-icons">⬇️</span></th>
-      <th>Priority <span className="sort-icons">⬇️</span></th>
-      <th>Response Time (hrs) <span className="sort-icons">⬇️</span></th>
-      <th>Work Completion Time (hrs) <span className="sort-icons">⬇️</span></th>
-      <th>Location 1 <span className="sort-icons">⬇️</span></th>
-      <th>Location 2 <span className="sort-icons">⬇️</span></th>
-      <th>Location 3 <span className="sort-icons">⬇️</span></th>
-      <th>Location 4 <span className="sort-icons">⬇️</span></th>
-      <th>Equipment OOS <span className="sort-icons">⬇️</span></th>
-      <th>Site Startup Account ID <span className="sort-icons">⬇️</span></th>
-      <th>Rotatable <span className="sort-icons">⬇️</span></th>
-      <th>Updated By <span className="sort-icons">⬇️</span></th>
-      <th>Updated Datetime <span className="sort-icons">⬇️</span></th>
-      <th>Defect Flag <span className="sort-icons">⬇️</span></th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-  {equipmentList.length === 0 ? (
+        <table className="equipment-table">
+          <thead>
+            <tr>
+              <th>S.No <span className="sort-icons">⬇️</span></th>
+              <th>Code <span className="sort-icons">⬇️</span></th>
+              <th>Description <span className="sort-icons">⬇️</span></th>
+              <th>Equipment Type Group ID <span className="sort-icons">⬇️</span></th>
+              <th>Equipment Type ID <span className="sort-icons">⬇️</span></th>
+              <th>Site <span className="sort-icons">⬇️</span></th>
+              <th>Serial Number <span className="sort-icons">⬇️</span></th>
+              <th>Model Number <span className="sort-icons">⬇️</span></th>
+              <th>QR Code <span className="sort-icons">⬇️</span></th>
+              <th>Asset Number <span className="sort-icons">⬇️</span></th>
+              <th>Status <span className="sort-icons">⬇️</span></th>
+              <th>Installation Date <span className="sort-icons">⬇️</span></th>
+              <th>Warranty Start Date <span className="sort-icons">⬇️</span></th>
+              <th>Warranty End Date <span className="sort-icons">⬇️</span></th>
+              <th>Out of Service <span className="sort-icons">⬇️</span></th>
+              <th>Priority <span className="sort-icons">⬇️</span></th>
+              <th>Response Time (hrs) <span className="sort-icons">⬇️</span></th>
+              <th>Work Completion Time (hrs) <span className="sort-icons">⬇️</span></th>
+              <th>Location 1 <span className="sort-icons">⬇️</span></th>
+              <th>Location 2 <span className="sort-icons">⬇️</span></th>
+              <th>Location 3 <span className="sort-icons">⬇️</span></th>
+              <th>Location 4 <span className="sort-icons">⬇️</span></th>
+              <th>Equipment OOS <span className="sort-icons">⬇️</span></th>
+              <th>Site Startup Account ID <span className="sort-icons">⬇️</span></th>
+              <th>Rotatable <span className="sort-icons">⬇️</span></th>
+              <th>Updated By <span className="sort-icons">⬇️</span></th>
+              <th>Updated Datetime <span className="sort-icons">⬇️</span></th>
+              <th>Defect Flag <span className="sort-icons">⬇️</span></th>
+              <th>Actions</th>
+            </tr>
+         </thead>
+         <tbody>
+          {equipmentList.length === 0 ? (
               <tr>
                 <td colSpan="29">No equipment found</td>
-              </tr>
-            ) : (
-    equipmentList.map((eq) => (
-      <tr key={eq.id}>
-        <td>{eq.id}</td>
-        <td>{eq.code}</td>
-        <td>
-          {expandedRows.includes(eq.id) ? (
-            <>
-              {eq.description}
-              <span
+              </tr>) 
+              : (
+                equipmentList.map((eq) => (
+                <tr key={eq.id}>
+                <td>{eq.id}</td>
+                <td>{eq.code}</td>
+                <td>
+                {expandedRows.includes(eq.id) ? (
+                <>
+                {eq.description}
+                <span
                 className="read-more"
-                onClick={() => toggleReadMore(eq.id)}
-              >
+                onClick={() => toggleReadMore(eq.id)}>
                 {' '}Show Less
-              </span>
-            </>
-          ) : (
-            <>
-              {eq.description.length > 20
+                </span>
+                </>) : 
+                (
+                <>
+                {eq.description.length > 20
                 ? `${eq.description.substring(0, 20)}...`
                 : eq.description}
-              {eq.description.length > 20 && (
+                {eq.description.length > 20 && (
                 <span
                   className="read-more"
-                  onClick={() => toggleReadMore(eq.id)}
-                >
+                  onClick={() => toggleReadMore(eq.id)}>
                   {' '}Read More
                 </span>
               )}
@@ -679,12 +641,11 @@ const EquipmentPage = () => {
           <button className="delete-btn" onClick={() => handleDelete(eq.id)}>✖️</button>
         </td>
       </tr>
-    )))}
-  </tbody>
-</table>
+     )))}
+         </tbody>
+        </table>
       </div>
       </div>
   );
 };
-
 export default EquipmentPage;
