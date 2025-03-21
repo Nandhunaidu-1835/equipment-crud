@@ -1,0 +1,244 @@
+.equipment-container {
+    width: 100vw;  /* Full viewport width */
+    padding: 40px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    box-sizing: border-box; /* ✅ Ensure padding is included in width */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .page-title {
+    margin-top: 0px;
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 40px;
+  }
+  
+  .equipment-form {
+    display: flex;
+    flex-wrap: wrap;  /* Wrap inputs to the next line when out of space */
+    gap: 20px;
+  }
+  
+  .form-group {
+    flex: 1 1 300px;  /* Grow/Shrink, basis width */
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .checkbox-group {
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  input[type="text"],
+  input[type="number"],
+  textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+  }
+  
+  textarea {
+    resize: vertical;
+  }
+  
+  .submit-btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+    display: block;
+    width:220px;
+  }
+  
+  .submit-btn:hover {
+    background-color: #0056b3;
+  }
+
+  
+  .equipment-table th,
+  .equipment-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+  }
+  
+  .equipment-table th {
+    background-color: #f0f0f0;
+    color: #333;
+  }
+  
+  .sort-icons {
+    font-size: 12px;
+    cursor: pointer;
+    margin-left: 5px;
+  }
+  
+  .read-more {
+    color: #007bff;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  
+  .edit-btn,
+  .delete-btn {
+    border: none;
+    padding: 8px 12px;
+    margin: 0 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  
+  .edit-btn {
+    background-color: #ffc107;
+    color: #fff;
+  }
+  
+  .delete-btn {
+    background-color: #dc3545;
+    color: #fff;
+  }
+  
+  .edit-btn:hover {
+    background-color: #e0a800;
+  }
+  
+  .delete-btn:hover {
+    background-color: #c82333;
+  }
+  
+
+  .read-more {
+    color: blue;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-left: 5px;
+    text-decoration: underline;
+  }
+  
+
+/* ✅ Style the radio button group */
+.radio-group {
+    display: flex;
+    flex-direction: row;
+    gap: 20px; /* spacing between Active and Inactive */
+    margin-top: 8px;
+  }
+  
+  .radio-group label {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .radio-group input[type="radio"] {
+    margin-right: 8px; /* spacing between radio button and label text */
+    transform: scale(1.2); /* optional: makes the radio button a bit bigger */
+  }
+  
+  /* ✅ Style the priority dropdown */
+  .form-group select {
+    padding: 12px 14px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    appearance: none; /* remove default arrow */
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D'10'%20height%3D'10'%20viewBox%3D'0%200%2010%2010'%20xmlns%3D'http%3A//www.w3.org/2000/svg'%3E%3Cpolygon%20points%3D'0%2C0%2010%2C0%205%2C10'%20fill%3D'%23666'%20/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 12px;
+  }
+  
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color:gray; /* Blue border */
+  outline: none; /* Removes default outline */
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.5); /* Subtle glow */
+}
+  
+input[type="date"],
+input[type="datetime-local"],
+input[type="time"] {
+  padding: 10px;                
+  border: 1px solid #ccc;      
+  border-radius: 6px;           
+  font-size: 16px;              
+  background-color: #fff;      
+  color: #333;                 
+  box-sizing: border-box;       
+  width: 100%;                  
+  transition: border-color 0.3s, box-shadow 0.3s; 
+}
+
+input[type="date"]:focus,
+input[type="datetime-local"]:focus,
+input[type="time"]:focus {
+  border-color: #007bff;                          
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);     
+  outline: none;                                  
+  background-color: #fefefe;                      
+}
+
+.submit-btn-container {
+    display: flex;
+    flex-basis: 100%;
+    justify-content: center;
+}
+
+
+.no-arrows::-webkit-outer-spin-button,
+.no-arrows::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+
+.table-container {
+    width: 100%;
+    overflow-x: auto; /* enables horizontal scroll */
+}
+
+.equipment-table {
+    min-width: 1000px; /* Optional: sets a minimum width so columns don't get squished */
+    width: max-content; /* Ensures the table only takes up as much space as it needs */
+}
+
+body {
+    overflow-x: hidden; /* prevents the page itself from scrolling horizontally */
+}
+
+.error {
+  color: red;
+  font-size: 0.85em;
+  margin-top: 5px;
+  display: block;
+}
+
+.required-star {
+  color: red;
+}
+
+.success-message {
+  color: green;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
