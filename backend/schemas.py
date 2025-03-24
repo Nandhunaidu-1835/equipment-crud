@@ -2,6 +2,11 @@
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
+from enum import Enum
+
+class EquipmentOOS(str, Enum):  
+    YES = "yes"
+    NO = "no"
 
 class EquipmentBase(BaseModel):
     code: str
@@ -25,7 +30,7 @@ class EquipmentBase(BaseModel):
     location_2: Optional[int] = None
     location_3: Optional[int] = None
     location_4: Optional[str] = None
-    equipment_oos: Optional[str] = None
+    equipment_oos: EquipmentOOS  # ✅ Updated to Enum
     sitestartup_account_id: Optional[int] = None
     rotatable: bool = False
     updated_by: int

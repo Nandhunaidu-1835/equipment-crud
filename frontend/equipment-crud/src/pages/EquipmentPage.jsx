@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { getEquipment,createEquipment,updateEquipment,deleteEquipment} from '../services/equipmentService';
 import './EquipmentPage.css';
 
@@ -26,7 +26,7 @@ const EquipmentPage = () => {
     location_2: '',
     location_3: '',
     location_4: '',
-    equipment_oos: '',
+    equipment_oos: 'yes',
     sitestartup_account_id: '',
     rotatable: false,
     updated_by: '',
@@ -38,7 +38,8 @@ const EquipmentPage = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [expandedRows, setExpandedRows] = useState([]);
-  
+  const formRef = useRef(null); // Reference to the form
+
   useEffect(() => {
     fetchEquipment();
   }, []);
@@ -56,9 +57,18 @@ const EquipmentPage = () => {
     let newValue;
     if (type === 'checkbox') {
       newValue = checked;
-    } else if (type === 'radio' && (value === 'true' || value === 'false')) {
+    } 
+    else if (type === 'radio' && (value === 'true' || value === 'false')) {
       newValue = value === 'true';
-    } else {
+    }
+    else if (type === "number") {
+        newValue = value === "" ? "" : Number(value); // Ensure empty number fields are set as empty strings
+    } 
+    else if (type === "number") {
+      // Remove 'e' and ensure only numbers
+      newValue = value.replace(/[eE-]/g, ""); 
+    }
+    else {
       newValue = value;
     }
     setFormData((prevData) => ({
@@ -70,6 +80,7 @@ const EquipmentPage = () => {
       [name]: "", // Remove error for this field
     }));
   };
+  const regex = /^[A-Za-z0-9-]+$/; // Allows letters, numbers, and hyphen only
   const validateForm = (formData, setErrors) => {
     let errors = {};
     console.log("Form Data:", formData); // Debugging line
@@ -78,6 +89,14 @@ const EquipmentPage = () => {
         errors[key] = `${key.replace(/_/g, " ")} is required`;
       }
     });
+    if (!regex.test(formData.code)) {
+      errors.code="Must be Alphabetic or numerical"
+    }
+    else if (/^-+$/.test(formData.code)) {
+      // This checks if the input is only one or more hyphens (not allowed)
+      errors.code = "Cannot contain only special symbols";
+    }
+
     if (formData.warranty_start_date && formData.warranty_end_date) {
       const startDate = new Date(formData.warranty_start_date);
       const endDate = new Date(formData.warranty_end_date);
@@ -88,6 +107,14 @@ const EquipmentPage = () => {
     }
     setErrors(errors);
     console.log(errors);
+
+    setTimeout(() => {
+      const errorField = formRef.current?.querySelector(".error-field");
+      if (errorField) {
+        errorField.scrollIntoView({ behavior: "smooth", block: "center" });
+        errorField.focus();
+      }
+    }, 0); // Ensure it runs after state update
     return Object.keys(errors).length === 0; // Returns true if no errors 
   }; 
   const handleSubmit = async (e) => {
@@ -95,7 +122,7 @@ const EquipmentPage = () => {
     const isValid = validateForm(formData, setErrors);
     if (!isValid) {
       console.log("Validation failed", errors);
-      setErrorMessage("Validation failed. Please check the form.");
+      setErrorMessage("Please fix the errors in the form and try again.");
       return;
     }  
     console.log("Form submitted successfully", formData);
@@ -168,7 +195,7 @@ const EquipmentPage = () => {
       location_2: '',
       location_3: '',
       location_4: '',
-      equipment_oos: '',
+      equipment_oos: 'no',
       sitestartup_account_id: '',
       rotatable: false,
       updated_by: '',
@@ -177,6 +204,12 @@ const EquipmentPage = () => {
     });
     setEditId(null);
   };
+
+  const resetButtonForm = () => {
+    resetForm();
+    setErrorMessage("");
+    setSuccessMessage("");
+  }
 
   const toggleReadMore = (id) => {
     if (expandedRows.includes(id)) {
@@ -189,14 +222,16 @@ const EquipmentPage = () => {
   return (
     <div className="equipment-container">
       <h2 className="page-title">Equipment Management</h2>
-      <form onSubmit={handleSubmit} className="equipment-form">
-        <div className="form-group">
+      <form ref={formRef} onSubmit={handleSubmit} className="equipment-form">
+        <div className="form-group" >
           <label>Code:<span className="required-star">*</span></label>
           <input
             type="text"
             name="code"
             value={formData.code}
-            onChange={handleInputChange}/>
+            onChange={handleInputChange}
+            maxLength={15}
+            className={errors.code ? "error-field" : ""}/>
           {errors.code && <span className="error">{errors.code}</span>}
         </div>
 
@@ -293,6 +328,7 @@ const EquipmentPage = () => {
             type="text"
             name="location_1"
             value={formData.location_1}
+            maxLength={8}
             onChange={handleInputChange}/>
           {errors.location_1 && <span className="error">{errors.location_1}</span>}                  
         </div>
@@ -303,6 +339,7 @@ const EquipmentPage = () => {
             type="text"
             name="location_2"
             value={formData.location_2}
+            maxLength={8}
             onChange={handleInputChange}/>
           {errors.location_2 && <span className="error">{errors.location_2}</span>}                  
         </div>
@@ -312,6 +349,7 @@ const EquipmentPage = () => {
           <input
             type="text"
             name="location_3"
+            maxLength={8}
             value={formData.location_3}
             onChange={handleInputChange}/>
           {errors.location_3 && <span className="error">{errors.location_3}</span>}                  
@@ -351,12 +389,15 @@ const EquipmentPage = () => {
 
         <div className="form-group">
           <label>Equipment OOS:<span className="required-star">*</span></label>
-          <input
-            type="text"
-            name="equipment_oos"
-            value={formData.equipment_oos}
-            onChange={handleInputChange}/>
-          {errors.equipment_oos && <span className="error">{errors.equipment_oos}</span>}                  
+          <select
+          name="equipment_oos"
+          value={formData.equipment_oos}
+          onChange={handleInputChange}
+          >
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+         </select>
+        {errors.equipment_oos && <span className="error">{errors.equipment_oos}</span>}
         </div>
 
         <div className="form-group">
@@ -538,8 +579,11 @@ const EquipmentPage = () => {
         <button type="submit" className="submit-btn">
           {editId ? 'Update' : 'Create'} Equipment
         </button>
+        <div className="message-container">
+          {successMessage && <p className="success-message">{successMessage}</p>}
+          {errorMessage && <p className="error-message">{errorMessage}</p>}
         </div>
-        {successMessage && <p style={{ color: "green", marginTop: "10px",marginLeft: "490px", textAlign:"center"}}>{successMessage}</p>}
+        </div>
       </form>
       <br />
 
@@ -648,7 +692,7 @@ const EquipmentPage = () => {
         <td>
           <button className="edit-btn" onClick={() => handleEdit(eq)}>✏️</button>
           <button className="delete-btn" onClick={() => handleDelete(eq.id)}>✖️</button>
-          <button className="reset-btn" onClick={resetForm}>🔄</button> 
+          <button className="reset-btn" onClick={resetButtonForm}>🔄</button> 
         </td>
       </tr>
      )))}

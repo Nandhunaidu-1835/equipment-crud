@@ -211,9 +211,21 @@ input[type="time"]:focus {
 .submit-btn-container {
     display: flex;
     flex-basis: 100%;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center; /* Centers button and messages */
+}
+.message-container {
+  margin-top: 10px;
+  text-align: center;
 }
 
+.success-message {
+  color: green;
+}
+
+.error-message {
+  color: red;
+}
 
 .no-arrows::-webkit-outer-spin-button,
 .no-arrows::-webkit-inner-spin-button {

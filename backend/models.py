@@ -1,6 +1,11 @@
-from sqlalchemy import Column, BigInteger, String, Text, Boolean, DateTime, Integer, CHAR
+from sqlalchemy import Column, BigInteger, String, Text, Boolean, DateTime, Integer, CHAR,Enum as SQLEnum
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from database import Base
+from enum import Enum
+
+class EquipmentOOS(str, Enum):  
+    YES = "yes"
+    NO = "no"
 
 class Equipment(Base):
     __tablename__ = 'equipment'
@@ -27,7 +32,7 @@ class Equipment(Base):
     location_2 = Column(BigInteger)
     location_3 = Column(BigInteger)
     location_4 = Column(Text)
-    equipment_oos = Column(Text)
+    equipment_oos = Column(SQLEnum(EquipmentOOS, name="equipment_equipment_oos"), nullable=False)  # ✅ Using ENUM
     sitestartup_account_id = Column(BigInteger)
     rotatable = Column(Boolean, default=False, nullable=False)
     updated_by = Column(BigInteger, nullable=False)
