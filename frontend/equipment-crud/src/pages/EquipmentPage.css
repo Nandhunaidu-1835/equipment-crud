@@ -98,6 +98,13 @@
     cursor: pointer;
     font-size: 12px;
   }
+
+  .reset-btn:focus,
+  .delete-btn:focus,
+  .edit-btn:focus
+  {
+    outline: none; /* Ensures no outline on focus */
+  }
   
   .edit-btn {
     background-color: #ffc107;
@@ -114,6 +121,9 @@
     color: #fff;
   }
 
+  .reset-btn:hover {
+    background-color: #7cdd7c;;
+  }
 
   .edit-btn:hover {
     background-color: #e0a800;
