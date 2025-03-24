@@ -118,9 +118,18 @@ const EquipmentPage = () => {
       setErrorMessage("Failed to save equipment. Please try again.");
     }
   };
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return "";
+    return new Date(dateString).toISOString().slice(0, 16); // Convert to proper format 
+  };
   const handleEdit = (equipment) => {
     setFormData({
       ...equipment,
+        installation_date: formatDateForInput(equipment.installation_date),
+        warranty_start_date: formatDateForInput(equipment.warranty_start_date),
+        warranty_end_date: formatDateForInput(equipment.warranty_end_date),
+        updated_datetime: formatDateForInput(equipment.updated_datetime),
+        defectflag: Boolean(equipment.defectflag), 
     });
     setEditId(equipment.id);
   };
@@ -377,8 +386,8 @@ const EquipmentPage = () => {
           <input
             type="datetime-local"
             name="installation_date"
-            value={formData.installation_date}
-            onChange={handleInputChange}/>
+            value={formData.installation_date || ""}
+            onChange={(e) => setFormData({ ...formData, installation_date: e.target.value })} />
           {errors.installation_date && <span className="error">{errors.installation_date}</span>}                  
         </div>
 
@@ -387,8 +396,8 @@ const EquipmentPage = () => {
           <input
             type="datetime-local"
             name="warranty_start_date"
-            value={formData.warranty_start_date}
-            onChange={handleInputChange}/>
+            value={formData.warranty_start_date || ""}
+            onChange={(e) => setFormData({ ...formData, warranty_start_date: e.target.value })} />
           {errors.warranty_start_date && <span className="error">{errors.warranty_start_date}</span>}                  
         </div>
 
@@ -397,8 +406,8 @@ const EquipmentPage = () => {
           <input
             type="datetime-local"
             name="warranty_end_date"
-            value={formData.warranty_end_date}
-            onChange={handleInputChange}/>
+            value={formData.warranty_end_date || ""}
+            onChange={(e) => setFormData({ ...formData, warranty_end_date: e.target.value })} />
           {errors.warranty_end_date && <span className="error">{errors.warranty_end_date}</span>}                  
         </div>
 
@@ -417,8 +426,8 @@ const EquipmentPage = () => {
           <input
             type="datetime-local"
             name="updated_datetime"
-            value={formData.updated_datetime}
-            onChange={handleInputChange}/>
+            value={formData.updated_datetime || ""}
+            onChange={(e) => setFormData({ ...formData, updated_datetime: e.target.value })} />
           {errors.updated_datetime && <span className="error">{errors.updated_datetime}</span>}                  
         </div>
 
@@ -639,6 +648,7 @@ const EquipmentPage = () => {
         <td>
           <button className="edit-btn" onClick={() => handleEdit(eq)}>✏️</button>
           <button className="delete-btn" onClick={() => handleDelete(eq.id)}>✖️</button>
+          <button className="reset-btn" onClick={resetForm}>🔄</button> 
         </td>
       </tr>
      )))}

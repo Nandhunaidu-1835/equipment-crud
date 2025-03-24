@@ -40,7 +40,7 @@
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 6px;
-    font-size: 16px;
+    font-size: 14px;
   }
   
   textarea {
@@ -89,7 +89,8 @@
   }
   
   .edit-btn,
-  .delete-btn {
+  .delete-btn,
+  .reset-btn{
     border: none;
     padding: 8px 12px;
     margin: 0 5px;
@@ -108,6 +109,12 @@
     color: #fff;
   }
   
+  .reset-btn {
+    background-color: green;
+    color: #fff;
+  }
+
+
   .edit-btn:hover {
     background-color: #e0a800;
   }
