@@ -109,12 +109,12 @@ const EquipmentPage = () => {
     console.log(errors);
 
     setTimeout(() => {
-      const errorField = formRef.current?.querySelector(".error-field");
-      if (errorField) {
-        errorField.scrollIntoView({ behavior: "smooth", block: "center" });
-        errorField.focus();
+      const errorFields = formRef.current?.querySelectorAll(".error-field");
+      if (errorFields.length > 0) {
+        errorFields[0].scrollIntoView({ behavior: "smooth", block: "center" });
+        errorFields[0].focus();
       }
-    }, 0); // Ensure it runs after state update
+    }, 0);
     return Object.keys(errors).length === 0; // Returns true if no errors 
   }; 
   const handleSubmit = async (e) => {
@@ -240,7 +240,7 @@ const EquipmentPage = () => {
           <input
             type="number"
             name="equipment_type_group_id"
-            className = "no-arrows"
+            className={`no-arrows ${errors.equipment_type_group_id ? "error-field" : ""}`}
             value={formData.equipment_type_group_id}
             onChange={handleInputChange}/>
           {errors.equipment_type_group_id && <span className="error">{errors.equipment_type_group_id}</span>}          
@@ -251,7 +251,7 @@ const EquipmentPage = () => {
           <input
             type="number"
             name="equipment_type_id"
-            className = "no-arrows"
+            className={`no-arrows ${errors.equipment_type_id ? "error-field" : ""}`}
             value={formData.equipment_type_id}
             onChange={handleInputChange}/>
           {errors.equipment_type_id && <span className="error">{errors.equipment_type_id}</span>}          
@@ -262,7 +262,7 @@ const EquipmentPage = () => {
           <input
             type="number"
             name="site"
-            className = "no-arrows"
+            className={`no-arrows ${errors.site ? "error-field" : ""}`}
             value={formData.site}
             onChange={handleInputChange}/>
           {errors.site && <span className="error">{errors.site}</span>}          
@@ -287,6 +287,7 @@ const EquipmentPage = () => {
           <input
             type="text"
             name="serial_number"
+            className={`no-arrows ${errors.serial_number ? "error-field" : ""}`}
             value={formData.serial_number}
             onChange={handleInputChange}/>
           {errors.serial_number && <span className="error">{errors.serial_number}</span>}          
@@ -297,6 +298,7 @@ const EquipmentPage = () => {
           <input
             type="text"
             name="model_number"
+            className={`no-arrows ${errors.model_number ? "error-field" : ""}`}
             value={formData.model_number}
             onChange={handleInputChange}/>
           {errors.model_number && <span className="error">{errors.model_number}</span>}          
@@ -307,6 +309,7 @@ const EquipmentPage = () => {
           <input
             type="text"
             name="qrcode"
+            className={`no-arrows ${errors.qrcode ? "error-field" : ""}`}
             value={formData.qrcode}
             onChange={handleInputChange}/>
           {errors.qrcode && <span className="error">{errors.qrcode}</span>}          
@@ -317,6 +320,7 @@ const EquipmentPage = () => {
           <input
             type="text"
             name="asset_number"
+            className={`no-arrows ${errors.asset_number ? "error-field" : ""}`}
             value={formData.asset_number}
             onChange={handleInputChange}/>
           {errors.asset_number && <span className="error">{errors.asset_number}</span>}                  
@@ -327,6 +331,7 @@ const EquipmentPage = () => {
           <input
             type="text"
             name="location_1"
+            className={`no-arrows ${errors.location_1 ? "error-field" : ""}`}
             value={formData.location_1}
             maxLength={8}
             onChange={handleInputChange}/>
@@ -338,6 +343,7 @@ const EquipmentPage = () => {
           <input
             type="text"
             name="location_2"
+            className={`no-arrows ${errors.location_2 ? "error-field" : ""}`}
             value={formData.location_2}
             maxLength={8}
             onChange={handleInputChange}/>
@@ -349,6 +355,7 @@ const EquipmentPage = () => {
           <input
             type="text"
             name="location_3"
+            className={`no-arrows ${errors.location_3 ? "error-field" : ""}`}
             maxLength={8}
             value={formData.location_3}
             onChange={handleInputChange}/>
@@ -360,6 +367,7 @@ const EquipmentPage = () => {
           <input
             type="text"
             name="location_4"
+            className={`no-arrows ${errors.location_4 ? "error-field" : ""}`}
             value={formData.location_4}
             onChange={handleInputChange}/>
           {errors.location_4 && <span className="error">{errors.location_4}</span>}                  
@@ -370,7 +378,7 @@ const EquipmentPage = () => {
           <input
             type="number"
             name="response_time"
-            className = "no-arrows"
+            className={`no-arrows ${errors.response_time ? "error-field" : ""}`}
             value={formData.response_time}
             onChange={handleInputChange}/>
           {errors.response_time && <span className="error">{errors.response_time}</span>}                  
@@ -381,7 +389,7 @@ const EquipmentPage = () => {
           <input
             type="number"
             name="work_completion_time"
-            className = "no-arrows"
+            className={`no-arrows ${errors.work_completion_time ? "error-field" : ""}`}
             value={formData.work_completion_time}
             onChange={handleInputChange}/>
           {errors.work_completion_time && <span className="error">{errors.work_completion_time}</span>}                  
@@ -405,7 +413,7 @@ const EquipmentPage = () => {
           <input
             type="number"
             name="sitestartup_account_id"
-            className = "no-arrows"
+            className={`no-arrows ${errors.sitestartup_account_id ? "error-field" : ""}`}
             value={formData.sitestartup_account_id}
             onChange={handleInputChange}/>
           {errors.sitestartup_account_id && <span className="error">{errors.sitestartup_account_id}</span>}                  
@@ -416,7 +424,7 @@ const EquipmentPage = () => {
           <input
             type="number"
             name="updated_by"
-            className = "no-arrows"
+            className={`no-arrows ${errors.updated_by ? "error-field" : ""}`}
             value={formData.updated_by}
             onChange={handleInputChange}/>
           {errors.updated_by && <span className="error">{errors.updated_by}</span>}                  
@@ -427,6 +435,7 @@ const EquipmentPage = () => {
           <input
             type="datetime-local"
             name="installation_date"
+            className={`no-arrows ${errors.installation_date ? "error-field" : ""}`}
             value={formData.installation_date || ""}
             onChange={(e) => setFormData({ ...formData, installation_date: e.target.value })} />
           {errors.installation_date && <span className="error">{errors.installation_date}</span>}                  
@@ -437,6 +446,7 @@ const EquipmentPage = () => {
           <input
             type="datetime-local"
             name="warranty_start_date"
+            className={`no-arrows ${errors.warranty_start_date ? "error-field" : ""}`}
             value={formData.warranty_start_date || ""}
             onChange={(e) => setFormData({ ...formData, warranty_start_date: e.target.value })} />
           {errors.warranty_start_date && <span className="error">{errors.warranty_start_date}</span>}                  
@@ -447,6 +457,7 @@ const EquipmentPage = () => {
           <input
             type="datetime-local"
             name="warranty_end_date"
+            className={`no-arrows ${errors.warranty_end_date ? "error-field" : ""}`}
             value={formData.warranty_end_date || ""}
             onChange={(e) => setFormData({ ...formData, warranty_end_date: e.target.value })} />
           {errors.warranty_end_date && <span className="error">{errors.warranty_end_date}</span>}                  
@@ -456,6 +467,7 @@ const EquipmentPage = () => {
           <label>Description:<span className="required-star">*</span></label>
           <textarea
             name="description"
+            className={`no-arrows ${errors.description ? "error-field" : ""}`}
             value={formData.description}
             onChange={handleInputChange}/>
           {errors.description && <span className="error">{errors.description}</span>}                  
@@ -467,6 +479,7 @@ const EquipmentPage = () => {
           <input
             type="datetime-local"
             name="updated_datetime"
+            className={`no-arrows ${errors.updated_datetime ? "error-field" : ""}`}
             value={formData.updated_datetime || ""}
             onChange={(e) => setFormData({ ...formData, updated_datetime: e.target.value })} />
           {errors.updated_datetime && <span className="error">{errors.updated_datetime}</span>}                  
