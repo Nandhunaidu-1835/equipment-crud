@@ -28,7 +28,7 @@ target_metadata = Base.metadata
 # ... etc.
 
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+psycopg2://postgres:password1234@localhost/equipment_db")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+psycopg2://postgres:password1234@equipment_db:5432/equipment_db")
 
 
 

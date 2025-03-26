@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:15
+    container_name: equipment_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password1234
+      POSTGRES_DB: equipment_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d equipment_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  
+  backend:
+    build: ./backend
+    container_name: equipment_backend
+    depends_on:
+      db:
+        condition: service_healthy  # Ensures database is ready before backend starts
+    environment:
+      DATABASE_URL: postgresql+psycopg2://postgres:password1234@equipment_db:5432/equipment_db
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./frontend/equipment-crud
+    container_name: equipment_frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+
+volumes:
+  postgres_data:
