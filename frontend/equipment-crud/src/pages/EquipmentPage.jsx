@@ -123,6 +123,7 @@ const EquipmentPage = () => {
     if (!isValid) {
       console.log("Validation failed", errors);
       setErrorMessage("Please fix the errors in the form and try again.");
+      setSuccessMessage("")
       return;
     }  
     console.log("Form submitted successfully", formData);
@@ -131,6 +132,7 @@ const EquipmentPage = () => {
         ...formData,
         updated_datetime: new Date().toISOString(),
       };
+      setErrorMessage("");
       if (editId) {
         await updateEquipment(editId, updatedFormData);
         setSuccessMessage("Equipment updated successfully!");
@@ -166,6 +168,7 @@ const EquipmentPage = () => {
     try {
       await deleteEquipment(id);
       setSuccessMessage("Equipment deleted successfully!");
+      resetForm(); // Clear the form after successful deletion
       fetchEquipment();
     } catch (error) {
       console.error('Error deleting equipment:', error);
